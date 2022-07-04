@@ -42,11 +42,9 @@ struct Vector3D
 		return *this;
 	}
 };
-GLfloat CreateModul(Vector3D vector)
-{
-	return sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.x);
-}
-void Normalize(Vector3D& vector)
-{
-	vector /= CreateModul(vector);
-}
+GLfloat CreateModul(Vector3D vector);
+void Normalize(Vector3D& vector);
+void turnZ(Vector3D& vector, GLfloat angle);
+GLfloat FindInnerProduct(Vector3D first, Vector3D second);
+Vector3D CreateNormal(Vector3D first, Vector3D second);
+GLfloat FindAngle(Vector3D first, Vector3D second);

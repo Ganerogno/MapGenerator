@@ -1,4 +1,7 @@
 #include <GLFW/glfw3.h>
+#include "Button.h"
+#include "Menu.h"
+#include "UI.h"
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -7,37 +10,43 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
 }
-
-int main(void)
+bool Setting(GLFWwindow* &window)
 {
-    GLFWwindow* window;
-
-    /* Initialize the library */
     if (!glfwInit())
-        return -1;
-
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+        return false;
+    window = glfwCreateWindow(1000, 1000, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
-        return -1;
+        return false;
     }
     glfwSetKeyCallback(window, keyCallback);
-    /* Make the window's context current */
     glfwMakeContextCurrent(window);
+}
+int main(void)
+{
+    bool drawMenu = true;
+    GLFWwindow* window = nullptr;
+    if (!Setting(window))
+        return -1;
+    Button buttons[5]{};
+    buttons[0].Colored({ 0.2f,0.5f,0.1f }, { 0.5f,0.1f,0.5f }, { 0.1f,0.1f,0.1f });
 
-    /* Loop until the user closes the window */
+    GLfloat polygon1[15]{ 0.0f, 0.0f, 0.0f,  0.2f,0.2f, 0.0f,  0.4f,0.0f,0.0f, 0.4f,-0.3f, 0.0f, 0.0f,-0.3f, 0.0f };
+    Decoration decor({ 0.1f,0.2f,0 }, { 1,1,1 }, polygon1, 15);
+
+    Menu startMenu(buttons, 5, &decor);
+    startMenu.Colored({ 0.3f,0.3f,0.3f }, { 0.8f,0.1f,0.5f }, { 0.5f,0.5f,0.1f }, { 0.1f,0.1f,0.1f });
     while (!glfwWindowShouldClose(window))
     {
         glClearColor(0.2f, 0.2f, 0.2f, 1);
-        /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-
-        /* Swap front and back buffers */
+        if (drawMenu)
+        {
+            startMenu.Draw();
+        }
         glfwSwapBuffers(window);
 
-        /* Poll for and process events */
         glfwPollEvents();
     }
 
