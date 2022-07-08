@@ -3,9 +3,10 @@
 #include "Math3D.h"
 #include "Button.h"
 #include "Decoration.h"
+#include "Render.h"
 class Button;
 
-class Menu
+class Menu : public RenderItem
 {
 	Button* buttons;
 	int buttonsNum;
@@ -22,5 +23,5 @@ public:
 	Menu(Button* buttonlist, int num, Decoration* decor);
 	void Colored(Vector3D bColor, Vector3D bColorB, Vector3D lColorB, Vector3D tColorB);
 	void MoveButtons(POINTFLOAT startPosition);
-	void Draw();
+	void Render();
 };

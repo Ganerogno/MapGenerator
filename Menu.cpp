@@ -40,17 +40,18 @@ void Menu::MoveButtons(POINTFLOAT startPosition)
 		buttons[i].ResizeButton({ 0.5f,0.2f });
 	}
 }
-void Menu::Draw()
+void Menu::Render()
 {
 	glPushMatrix();
+	glLoadIdentity();
 	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glLineWidth(5);
+	decoration->DrawDecoration();
 	glLineWidth(2);
 	for (int i = 0; i < buttonsNum; i++)
 	{
 		buttons[i].DrawButton(backgroundColorButton, lineColorButton, textColorButton);
 	}
-	glLineWidth(5);
-	decoration->DrawDecoration();
 	glPopMatrix();
 }
