@@ -19,9 +19,13 @@ class Menu : public RenderItem
 	GLfloat buttonSize;
 	Decoration* decoration;
 public:
+	static bool drawMenu;
+
 	Menu();
 	Menu(Button* buttonlist, int num, Decoration* decor);
 	void Colored(Vector3D bColor, Vector3D bColorB, Vector3D lColorB, Vector3D tColorB);
 	void MoveButtons(POINTFLOAT startPosition);
-	void Render();
+	void Render() override;
+	void StopRender() override;
+	void ContinueRender() override;
 };

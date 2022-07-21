@@ -5,15 +5,48 @@
 #include "Menu.h"
 #include "UI.h"
 #include "Update.h"
+#include "Camera.h"
+#include "World.h"
+#include "PerlinNoise.h"
 
-
-static double FramesPerSecond = 60;
 std::chrono::steady_clock::duration Updater::deltaTime = std::chrono::milliseconds(16);
+bool Camera::keyboardKeys[91]{};
+bool Menu::drawMenu = true;
+int Chunk::size = 200;
+int Chunk::octaves = 4;
+unsigned int PerlinNoise::seed;
+int PerlinNoise::table[100]{};
+GLfloat PerlinNoise::scale = 100;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
+    //if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    //    glfwSetWindowShouldClose(window, GL_TRUE);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
+    {
+        Menu::drawMenu = !Menu::drawMenu;
+    }
+    if (Menu::drawMenu)
+    {
+        if ((key == GLFW_KEY_W || key == GLFW_KEY_S) && action == GLFW_REPEAT)
+        {
+            Camera::keyboardKeys[key] = true;
+        }
+        if (key == GLFW_KEY_ENTER)
+        {
+
+        }
+    }
+    else
+    {
+        if (key <= GLFW_KEY_Z)
+        {
+            if(action != GLFW_RELEASE)
+                Camera::keyboardKeys[key] = true;
+            else
+                Camera::keyboardKeys[key] = false;
+        }
+    }
 }
 bool Setting(GLFWwindow* &window)
 {
@@ -28,20 +61,18 @@ bool Setting(GLFWwindow* &window)
     glfwSetKeyCallback(window, keyCallback);
     glfwMakeContextCurrent(window);
     glOrtho(-1, 1, -1, 1, 1, -1);
-    glFrustum(-1, 1, -1, 1, 1, 10);
+    glFrustum(-1, 1, -1, 1, 1, 200);
+    glEnable(GL_DEPTH_TEST);
+    glfwSwapInterval(1);
+    PerlinNoise::SetSeed(1232);
 }
 void Draw(GLFWwindow* window, Render render)
 {
-    glPushMatrix();
-    //glRotatef(-20, 1, 0, 0);
-    glTranslatef(0, 0, -3);
     render.Draw();
     glfwSwapBuffers(window);
-    glPopMatrix();
 }
 int main(void)
 {
-    bool drawMenu = true;
     bool canUpdate = true;
     std::chrono::steady_clock::time_point startTime;
     GLFWwindow* window = nullptr;
@@ -57,7 +88,6 @@ int main(void)
     updater.Add(&decor);
     Render render;
     Menu startMenu(buttons, 5, &decor);
-    render.Add(&startMenu);
     startMenu.Colored({ 0.3f,0.3f,0.3f }, { 0.8f,0.1f,0.5f }, { 0.5f,0.5f,0.1f }, { 0.1f,0.1f,0.1f });
     std::thread updateThread([&canUpdate, &updater] {
         while (canUpdate)
@@ -68,9 +98,30 @@ int main(void)
         }
         });
     updateThread.detach();
+
+    Camera camera({ 0,0,0 });
+    updater.Add(&camera);
+    World world(&camera);
+    render.Add(&startMenu);
+    render.Add(&world);
+    world.StopRender();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDepthMask(GL_FALSE);
     while (!glfwWindowShouldClose(window))
     {
         startTime = std::chrono::steady_clock::now();
+        if (!Menu::drawMenu && startMenu.GetCanRender())
+        {
+            glDepthMask(GL_LESS);
+            startMenu.StopRender();
+            world.ContinueRender();
+        }
+        if (Menu::drawMenu && !startMenu.GetCanRender())
+        {
+            glDepthMask(GL_FALSE);
+            startMenu.ContinueRender();
+            world.StopRender();
+        }
 
         Draw(window, render);
         glfwPollEvents();

@@ -1,6 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
 #include <math.h>
+#include "Math2D.h"
 struct Vector3D
 {
 	GLfloat x;

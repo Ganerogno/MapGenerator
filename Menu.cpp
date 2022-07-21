@@ -42,10 +42,10 @@ void Menu::MoveButtons(POINTFLOAT startPosition)
 }
 void Menu::Render()
 {
+	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glPushMatrix();
 	glLoadIdentity();
-	glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
 	glLineWidth(5);
 	decoration->DrawDecoration();
 	glLineWidth(2);
@@ -54,4 +54,14 @@ void Menu::Render()
 		buttons[i].DrawButton(backgroundColorButton, lineColorButton, textColorButton);
 	}
 	glPopMatrix();
+}
+void Menu::StopRender()
+{
+	canRender = false;
+	decoration->StopUpdate();
+}
+void Menu::ContinueRender()
+{
+	canRender = true;
+	decoration->ContinueUpdate();
 }

@@ -22,12 +22,16 @@ void RenderItem::StopRender()
 	canRender = false;
 }
 
+void RenderItem::ContinueRender()
+{
+	canRender = true;
+}
+
 void RenderItem::MustDeleted()
 {
 	StopRender();
 	mustDeleted = true;
 }
-
 void Render::Add(RenderItem* item)
 {
 	items.push_back(item);

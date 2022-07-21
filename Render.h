@@ -1,5 +1,6 @@
 #pragma once
 #include <deque>
+#include<GLFW/glfw3.h>
 
 class RenderItem
 {
@@ -10,7 +11,8 @@ public:
 	RenderItem();
 	bool GetCanRender();
 	bool GetMustDeleted();
-	void StopRender();
+	virtual void StopRender();
+	virtual void ContinueRender();
 	void MustDeleted();
 	virtual void Render() = 0;
 };

@@ -20,7 +20,10 @@ void UpdateItem::StopUpdate()
 {
 	canUpdate = false;
 }
-
+void UpdateItem::ContinueUpdate()
+{
+	canUpdate = true;
+}
 void UpdateItem::MustDeleted()
 {
 	StopUpdate();

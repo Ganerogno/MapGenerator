@@ -12,7 +12,8 @@ public:
 	UpdateItem();
 	bool GetCanUpdate();
 	bool GetMustDeleted();
-	void StopUpdate();
+	virtual void StopUpdate();
+	virtual void ContinueUpdate();
 	void MustDeleted();
 	virtual void Update() = 0;
 };
