@@ -14,7 +14,19 @@ void turnZ(Vector3D& vector, GLfloat ang)
 	vector.x = x * cos(ang) - vector.y * sin(ang);
 	vector.y = x * sin(ang) + vector.y * cos(ang);
 }
-GLfloat FindInnerProduct(Vector3D first, Vector3D second)
+void turnX(Vector3D& vector, GLfloat ang)
+{
+	GLfloat y = vector.y;
+	vector.y = y * cos(ang) + vector.z * sin(ang);
+	vector.z = -y * sin(ang) + vector.z * cos(ang);
+}
+void turnY(Vector3D& vector, GLfloat ang)
+{
+	GLfloat x = vector.x;
+	vector.x = x * cos(ang) + vector.z * sin(ang);
+	vector.z = -x * sin(ang) + vector.z * cos(ang);
+}
+GLfloat Dot(Vector3D first, Vector3D second)
 {
 	return first.x * second.x + first.y * second.y + first.z * second.z;
 }
@@ -29,7 +41,14 @@ Vector3D CreateNormal(Vector3D first, Vector3D second)
 }
 GLfloat FindAngle(Vector3D first, Vector3D second)
 {
-	GLfloat cos = FindInnerProduct(first, second) / (CreateModul(first) * CreateModul(second));
+	GLfloat cos = Dot(first, second) / (CreateModul(first) * CreateModul(second));
 	GLfloat sin = CreateModul(CreateNormal(first, second)) / (CreateModul(first) * CreateModul(second));
 	return atan2f(sin, cos);
+}Vector3D CreateVector3D(Vector3D startP, Vector3D endP)
+{
+	return { endP.x - startP.x, endP.y - startP.y, endP.z - startP.z };
+}
+Vector3D Cross(Vector3D first, Vector3D second)
+{
+	return { first.y * second.z - first.z * second.y, first.z * second.x - first.x * second.z, first.x * second.y - first.y * second.x};
 }

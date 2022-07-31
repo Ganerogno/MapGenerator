@@ -58,9 +58,9 @@ void Decoration::Rotate()
 		rotatedVectors[i / 3] = { polygon[i] - center.x, polygon[i + 1] - center.y, 0 };
 	}
 	angle += angleSpeed;
-	if (angle > M_PI * 2)
+	if (angle > M_PI)
 		angle -= M_PI * 2;
-	if (angle < -M_PI * 2)
+	if (angle < -M_PI)
 		angle += M_PI * 2;
 
 	for (int i = 0; i < 5; i++)

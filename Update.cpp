@@ -47,11 +47,8 @@ void Updater::Update()
 }
 void Updater::Delete()
 {
-	for (std::deque<UpdateItem*>::iterator item = items.begin(); item != items.end(); ++item)
-	{
-		if ((*item)->GetMustDeleted())
+	items.erase( std::remove_if(items.begin(), items.end(), [](UpdateItem*& item)
 		{
-			items.erase(item);
-		}
-	}
+			return (*item).GetCanUpdate();
+		}), items.end());
 }

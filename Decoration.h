@@ -1,6 +1,5 @@
 #pragma once
 #define _USE_MATH_DEFINES
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <math.h>
 #include "Math3D.h"
@@ -15,7 +14,7 @@ class Decoration : public UpdateItem
 	GLfloat angleSpeed;
 	GLfloat* polygon;
 	GLfloat speed;
-	Vector3D rotatedVectors[5]{};//Сделать указатель для n-го кол-ва векторов
+	Vector3D rotatedVectors[5]{};
 	int polygonVertexNum;
 	void Update() override;
 public:

@@ -1,18 +1,22 @@
 #pragma once
-#include <deque>
 #include <vector>
 #include "Render.h"
 #include "Math3D.h"
 #include "PerlinNoise.h"
+#include "Water.h"
 #include "Camera.h"
+#include "Sun.h"
 
 class Chunk
 {
 public:
-	static int size;
+	static const int size;
 	static int octaves;
-	float** coordinates;
+	GLfloat** coordinates;
 	Vector3D** color;
+	GLuint vertexVBO;
+	GLuint colorVBO;
+	GLuint indexEBO;
 	Chunk();
 	Chunk(const Chunk& other);
 	~Chunk();
@@ -22,10 +26,13 @@ public:
 
 class World : public RenderItem
 {
-	std::deque<std::deque<Chunk>> floor;
+	Chunk floor;
 	Camera* camera;
+	Water* water;
+	Sun* sun;
 public:
-	World(Camera* pCamera);
+	World(Camera* pCamera, Water* pWater, Sun* pSun);
 	void Render() override;
 	void StopRender() override;
+	void ContinueRender() override;
 };

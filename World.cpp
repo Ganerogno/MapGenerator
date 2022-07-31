@@ -8,17 +8,17 @@ Chunk::Chunk()
 		color[i] = new Vector3D[Chunk::size - 1]{};
 	}
 
-	coordinates = new float* [Chunk::size];
+	coordinates = new GLfloat* [Chunk::size];
 	for (int i = 0; i < Chunk::size; i++)
 	{
-		coordinates[i] = new float[Chunk::size]{};
+		coordinates[i] = new GLfloat[Chunk::size]{};
 	}
 
 	for (int i = 0; i < Chunk::size; i++)
 	{
 		for (int j = 0; j < Chunk::size; j++)
 		{
-			coordinates[i][j] += PerlinNoise::Noise(i, j, Chunk::size, 8, 0.5);
+			coordinates[i][j] += PerlinNoise::Noise(i, j, Chunk::size, 8, 0.5) * PerlinNoise::scale;
 		}
 	}
 	for (int i = 0; i < Chunk::size - 1; i++)
@@ -37,11 +37,11 @@ Chunk::Chunk()
 				color[i][j].y = 0.8;
 				color[i][j].z = 0.1;
 			}
-			if (coordinates[i][j] < -0.6 * 20)
+			if (coordinates[i][j] < Water::hight)
 			{
-				color[i][j].x = 0.2;
-				color[i][j].y = 0.1;
-				color[i][j].z = 0.8;
+				color[i][j].x = 0.8;
+				color[i][j].y = 0.8;
+				color[i][j].z = 0.1;
 			}
 			color[i][j].x += (rand() % 10) / 50.;
 			color[i][j].y += (rand() % 10) / 50.;
@@ -52,11 +52,11 @@ Chunk::Chunk()
 
 Chunk::Chunk(const Chunk& other)
 {
-	coordinates = new float* [Chunk::size];
+	coordinates = new GLfloat* [Chunk::size];
 	color = other.color;
 	for (int i = 0; i < Chunk::size; i++)
 	{
-		coordinates[i] = new float[Chunk::size]{};
+		coordinates[i] = new GLfloat[Chunk::size]{};
 	}
 	for (int i = 0; i < Chunk::size; i++)
 	{
@@ -109,11 +109,11 @@ void Chunk::DrawChunk()
 	}
 }
 
-World::World(Camera* pCamera)
+World::World(Camera* pCamera, Water* pWater, Sun* pSun)
 {
 	camera = pCamera;
-	floor.push_back(std::deque<Chunk>());
-	floor[0].push_back(Chunk());
+	water = pWater;
+	sun = pSun;
 }
 void World::Render()
 {
@@ -123,16 +123,20 @@ void World::Render()
 	glRotatef(-camera->angle.x, 1, 0, 0);
 	glRotatef(camera->angle.z, 0, 0, 1);
 	glTranslatef(-camera->position.x, -camera->position.y, -(camera->position.z + camera->growth));
-	for (int i = 0; i < floor.size(); i++)
-	{
-		for (int j = 0; j < floor[i].size(); j++)
-		{
-			floor[i][j].DrawChunk();
-		}
-	}
+	floor.DrawChunk();
+	water->Render();
+	sun->Render();
 	glPopMatrix();
 }
 void World::StopRender()
 {
 	canRender = false;
+	water->StopRender();
+	sun->StopRender();
+}
+void World::ContinueRender()
+{
+	canRender = true;
+	water->ContinueRender();
+	sun->ContinueRender();
 }

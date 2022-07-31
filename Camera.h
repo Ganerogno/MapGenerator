@@ -1,5 +1,7 @@
 #pragma once
 #define _USE_MATH_DEFINES
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <math.h>
 #include "Math3D.h"
 #include "Update.h"
@@ -81,6 +83,6 @@ public:
 		//Normalize(movement); Нужна проверка на 0
 		//movement *= speed * 0.016;
 		position += movement;
-		std::cout << position.x << " " << position.y << std::endl;
+		//std::cout << position.x << " " << position.y << std::endl;
 	}
 };

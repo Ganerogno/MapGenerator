@@ -1,22 +1,27 @@
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <thread>
 #include <chrono>
 #include "Button.h"
 #include "Menu.h"
 #include "UI.h"
+#include "Shader.h"
+#include "Water.h"
 #include "Update.h"
 #include "Camera.h"
 #include "World.h"
 #include "PerlinNoise.h"
+#include "Sun.h"
 
 std::chrono::steady_clock::duration Updater::deltaTime = std::chrono::milliseconds(16);
 bool Camera::keyboardKeys[91]{};
 bool Menu::drawMenu = true;
-int Chunk::size = 200;
+const int Chunk::size = 200;
 int Chunk::octaves = 4;
 unsigned int PerlinNoise::seed;
 int PerlinNoise::table[100]{};
 GLfloat PerlinNoise::scale = 100;
+GLfloat Water::hight = -3;
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
@@ -48,10 +53,11 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
         }
     }
 }
-bool Setting(GLFWwindow* &window)
+bool Init(GLFWwindow* &window)
 {
     if (!glfwInit())
         return false;
+
     window = glfwCreateWindow(1000, 1000, "Hello World", NULL, NULL);
     if (!window)
     {
@@ -60,11 +66,29 @@ bool Setting(GLFWwindow* &window)
     }
     glfwSetKeyCallback(window, keyCallback);
     glfwMakeContextCurrent(window);
+    gladLoadGL();
+    return true;
+}
+bool Setting()
+{
+    //glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
     glOrtho(-1, 1, -1, 1, 1, -1);
-    glFrustum(-1, 1, -1, 1, 1, 200);
+    glFrustum(-1, 1, -1, 1, 1, 400);
+    //glMatrixMode(GL_MODELVIEW);
+    //glLoadIdentity();
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHT0);
+    //glEnable(GL_COLOR_MATERIAL);
     glfwSwapInterval(1);
-    PerlinNoise::SetSeed(1232);
+    PerlinNoise::SetSeed(23);
+
+
+
+    return true;
 }
 void Draw(GLFWwindow* window, Render render)
 {
@@ -76,8 +100,12 @@ int main(void)
     bool canUpdate = true;
     std::chrono::steady_clock::time_point startTime;
     GLFWwindow* window = nullptr;
-    if (!Setting(window))
+
+    if (!Init(window))
         return -1;
+    if (!Setting())
+        return -1;
+
     Button buttons[5]{};
     buttons[0].Colored({ 0.2f,0.5f,0.1f }, { 0.5f,0.1f,0.5f }, { 0.1f,0.1f,0.1f });
 
@@ -89,6 +117,28 @@ int main(void)
     Render render;
     Menu startMenu(buttons, 5, &decor);
     startMenu.Colored({ 0.3f,0.3f,0.3f }, { 0.8f,0.1f,0.5f }, { 0.5f,0.5f,0.1f }, { 0.1f,0.1f,0.1f });
+
+    Camera camera({ 30,30,10 });
+    updater.Add(&camera);
+    Shader sunShader;
+    sunShader.AddShader("Sun.vert", GL_VERTEX_SHADER);
+    sunShader.AddShader("Sun.frag", GL_FRAGMENT_SHADER);
+    sunShader.CreateProgram();
+    Sun sun(5.5, 200, Chunk::size / 2, 0, 0.5, &sunShader, { 1,1,0 }, { 5,1,0 });
+
+    updater.Add(&sun);
+    Shader waterShader;
+    waterShader.AddShader("Water.vert", GL_VERTEX_SHADER);
+    waterShader.AddShader("Water.frag", GL_FRAGMENT_SHADER);
+    waterShader.CreateProgram();
+    Water water(Chunk::size, 2, &waterShader, &camera);
+    updater.Add(&water);
+    World world(&camera, &water, &sun);
+
+
+    render.Add(&startMenu);
+    render.Add(&world);
+    world.StopRender();
     std::thread updateThread([&canUpdate, &updater] {
         while (canUpdate)
         {
@@ -98,13 +148,6 @@ int main(void)
         }
         });
     updateThread.detach();
-
-    Camera camera({ 0,0,0 });
-    updater.Add(&camera);
-    World world(&camera);
-    render.Add(&startMenu);
-    render.Add(&world);
-    world.StopRender();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDepthMask(GL_FALSE);
     while (!glfwWindowShouldClose(window))
@@ -118,6 +161,7 @@ int main(void)
         }
         if (Menu::drawMenu && !startMenu.GetCanRender())
         {
+            glClear(GL_DEPTH_BUFFER_BIT);
             glDepthMask(GL_FALSE);
             startMenu.ContinueRender();
             world.StopRender();

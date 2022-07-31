@@ -1,6 +1,5 @@
 #pragma once
 #include <Windows.h>
-#include <GLFW/glfw3.h>
 #include "Menu.h"
 #include "Math3D.h"
 class Menu;

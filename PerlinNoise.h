@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 
 class PerlinNoise
@@ -21,7 +21,7 @@ public:
 			result += Noise(x, y, size / (count + 1)) * amplitude;
 			amplitude *= persistence;
 		}
-		return result/max*scale;
+		return result/max;
 	}
 	static float QunticCurve(float point)
 	{

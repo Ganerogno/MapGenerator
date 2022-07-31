@@ -49,11 +49,8 @@ void Render::Draw()
 }
 void Render::Delete()
 {
-	for (std::deque<RenderItem*>::iterator item = items.begin(); item != items.end(); ++item)
-	{
-		if ((*item)->GetMustDeleted())
+	items.erase(std::remove_if(items.begin(), items.end(), [](RenderItem*& item)
 		{
-			items.erase(item);
-		}
-	}
+			return (*item).GetCanRender();
+		}), items.end());
 }
