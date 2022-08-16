@@ -27,6 +27,7 @@ std::chrono::steady_clock::duration Camera::attackDeltaTime = std::chrono::milli
 std::chrono::steady_clock::duration Enemy::attackDeltaTime = std::chrono::milliseconds(500);
 bool Camera::keyboardKeys[91]{};
 bool Camera::leftMouseButton = false;
+bool Camera::dead = false;
 bool Menu::drawMenu = true;
 GLfloat Button::symbolWidth[256]{};
 //Texture Menu::text = Texture((char*)"../Materials/Text.png");
@@ -39,11 +40,18 @@ GLfloat Water::hight = -5;
 GLfloat** Chunk::coordinates = nullptr;
 GLfloat Alive::gravitation = 8;
 bool closeGame = false;
+bool newGame = false;
+bool Menu::continueGame = false;
 //GLfloat Texture::textureCoordinates[8] = { 0,1, 1,1, 1,0, 0,0 };
-
-void MenuToggle()
+void ContinueGame()
 {
-    Menu::drawMenu = !Menu::drawMenu;
+    Menu::drawMenu = false;
+}
+void NewGame()
+{
+    Menu::drawMenu = false;
+    newGame = true;
+    Menu::continueGame = true;
 }
 void CloseGame()
 {
@@ -55,7 +63,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
     //    glfwSetWindowShouldClose(window, GL_TRUE);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
-        Menu::drawMenu = !Menu::drawMenu;
+        Menu::drawMenu = true;
     }
     if (key <= GLFW_KEY_Z)
     {
@@ -130,6 +138,7 @@ void Draw(GLFWwindow* window, Render render)
 int main(void)
 {
     bool canUpdate = true;
+    bool firstStart = true;
     std::chrono::steady_clock::time_point startTime;
     GLFWwindow* window = nullptr;
 
@@ -139,7 +148,7 @@ int main(void)
         return -1;
     Texture text("Text.png");
     Button::FindSymbolWidth(&text);
-    Button buttons[2]{Button("Новая игра", &text, MenuToggle) , Button("Выход", &text, CloseGame)};
+    Button buttons[3]{ Button("Продолжить игру", &text, ContinueGame), Button("Новая игра", &text, NewGame) , Button("Выход", &text, CloseGame)};
     //Button buttons[1]{ Button("a", &text) };
     buttons[0].Colored({ 0.2f,0.5f,0.1f }, { 0.5f,0.1f,0.5f }, { 0.1f,1,0.1f });
     GLfloat polygon1[15]{ 0.0f, 0.0f, 0.0f,  0.2f,0.2f, 0.0f,  0.4f,0.0f,0.0f, 0.4f,-0.3f, 0.0f, 0.0f,-0.3f, 0.0f };
@@ -147,14 +156,15 @@ int main(void)
     Updater updater;
     updater.Add(&decor);
     Render render;
-    Menu startMenu(buttons, 2, &decor, window);
+    Menu startMenu(buttons, 3, &decor, window);
     updater.Add(&startMenu);
     startMenu.Colored({ 0.3f,0.3f,0.3f }, { 0.8f,0.1f,0.5f }, { 0.5f,0.5f,0.1f }, { 0.1f,0.1f,0.1f });
 
     Camera camera(true, 4, { 30,30,10 }, 0, 45, 100, 3.5f, 100, 20, window);
     updater.Add(&camera);
     Button timerText("0", &text);
-    UI ui(&camera, { 0,0,0 }, 3, &timerText);
+    Button endGameText("Игра окончена", &text);
+    UI ui(&camera, { 0,0,0 }, 3, &timerText, &endGameText);
 
     Shape shape({ 4,4,4 });
     Shader sunShader;
@@ -212,6 +222,20 @@ int main(void)
     int count = 1;
     while (!glfwWindowShouldClose(window))
     {
+        if (newGame)
+        {
+            if (!firstStart)
+            {
+                camera.dead = false;
+                camera.GetCurrentHP() = camera.GetHealthPoint();
+                camera.ContinueRender();
+                world.ContinueRender();
+                world.ReBuild();
+                waves.Restart();
+            }
+            firstStart = false;
+        }
+        newGame = false;
         startTime = std::chrono::steady_clock::now();
         if (Camera::leftMouseButton && !Menu::drawMenu)
         {
@@ -219,9 +243,9 @@ int main(void)
             glReadPixels(500, 500, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels);
             if (pixels[0] && !pixels[1] && !pixels[2])
             {
-                if (waves.GetSize() && camera.attackTime + Camera::attackDeltaTime < std::chrono::steady_clock::now())
+                if (waves.GetSize() && camera.GetAttackTime() + Camera::attackDeltaTime < std::chrono::steady_clock::now())
                 {
-                    waves.GetEnemy(pixels[0]).TakeDamage(camera.damage);
+                    waves.GetEnemy(pixels[0]).TakeDamage(camera.GetDamage());
                 }
             }
         }

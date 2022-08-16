@@ -23,6 +23,7 @@ public:
 	Chunk();
 	Chunk(const Chunk& other);
 	~Chunk();
+	void FillChunk();
 	void DrawChunk();
 };
 
@@ -39,4 +40,5 @@ public:
 	void StopRender() override;
 	void ContinueRender() override;
 	Camera* GetCamera();
+	void ReBuild();
 };

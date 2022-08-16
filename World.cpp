@@ -21,47 +21,12 @@ Chunk::Chunk()
 	{
 		coordinates[i] = new GLfloat[Chunk::size]{};
 	}
-
-	for (int i = 0; i < Chunk::size; i++)
-	{
-		for (int j = 0; j < Chunk::size; j++)
-		{
-			coordinates[i][j] += PerlinNoise::Noise(i, j, Chunk::size, 8, 0.5) * PerlinNoise::scale;
-		}
-	}
-	for (int i = 0; i < Chunk::size - 1; i++)
-	{
-		for (int j = 0; j < Chunk::size - 1; j++)
-		{
-			if (coordinates[i][j] > 0.7 * 20)
-			{
-				color[i][j].x = 0.8;
-				color[i][j].y = 0.8;
-				color[i][j].z = 0.8;
-			}
-			else if (coordinates[i][j] < 0.7 * 20)
-			{
-				color[i][j].x = 0.2;
-				color[i][j].y = 0.8;
-				color[i][j].z = 0.1;
-			}
-			if (coordinates[i][j] < Water::hight + 2)
-			{
-				color[i][j].x = 0.8;
-				color[i][j].y = 0.8;
-				color[i][j].z = 0.1;
-			}
-			color[i][j].x += (rand() % 10) / 50.;
-			color[i][j].y += (rand() % 10) / 50.;
-			color[i][j].z += (rand() % 10) / 50.;
-		}
-	}
+	FillChunk();
 }
 
 Chunk::Chunk(const Chunk& other)
 {
 	coordinates = new GLfloat* [Chunk::size];
-	color = other.color;
 	for (int i = 0; i < Chunk::size; i++)
 	{
 		coordinates[i] = new GLfloat[Chunk::size]{};
@@ -99,6 +64,50 @@ Chunk::~Chunk()
 		delete color[i];
 	}
 	delete color;
+}
+void Chunk::FillChunk()
+{
+	for (int i = 0; i < Chunk::size; i++)
+	{
+		for (int j = 0; j < Chunk::size; j++)
+		{
+			coordinates[i][j] = 0;
+		}
+	}
+	for (int i = 0; i < Chunk::size; i++)
+	{
+		for (int j = 0; j < Chunk::size; j++)
+		{
+			coordinates[i][j] += PerlinNoise::Noise(i, j, Chunk::size, 8, 0.5) * PerlinNoise::scale;
+		}
+	}
+	for (int i = 0; i < Chunk::size - 1; i++)
+	{
+		for (int j = 0; j < Chunk::size - 1; j++)
+		{
+			if (coordinates[i][j] > 0.7 * 20)
+			{
+				color[i][j].x = 0.8;
+				color[i][j].y = 0.8;
+				color[i][j].z = 0.8;
+			}
+			else if (coordinates[i][j] < 0.7 * 20)
+			{
+				color[i][j].x = 0.2;
+				color[i][j].y = 0.8;
+				color[i][j].z = 0.1;
+			}
+			if (coordinates[i][j] < Water::hight + 2)
+			{
+				color[i][j].x = 0.8;
+				color[i][j].y = 0.8;
+				color[i][j].z = 0.1;
+			}
+			color[i][j].x += (rand() % 10) / 50.;
+			color[i][j].y += (rand() % 10) / 50.;
+			color[i][j].z += (rand() % 10) / 50.;
+		}
+	}
 }
 void Chunk::DrawChunk()
 {
@@ -144,4 +153,9 @@ void World::ContinueRender()
 Camera* World::GetCamera()
 {
 	return camera;
+}
+void World::ReBuild()
+{
+	PerlinNoise::SetSeed(rand());
+	floor.FillChunk();
 }

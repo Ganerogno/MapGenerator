@@ -36,7 +36,7 @@ Sun::Sun(GLfloat sunSize, int sunDistance, int wSize, GLfloat sunAngle, GLfloat 
 	worldPosition = position;
 	worldPosition.x += worldSize;
 	worldPosition.y += worldSize;
-	attributeWorldPosition = glGetAttribLocation(shader->program, "worldPosition");
+	attributeWorldPosition = glGetAttribLocation(shader->GetProgram(), "worldPosition");
 	delete vertex;
 	delete vertexIndex;
 }

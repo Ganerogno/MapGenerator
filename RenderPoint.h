@@ -27,7 +27,7 @@ public:
 			glPushMatrix();
 			glRotatef(-world->GetCamera()->angle.x, 1, 0, 0);
 			glRotatef(world->GetCamera()->angle.z, 0, 0, 1);
-			glTranslatef(-world->GetCamera()->position.x, -world->GetCamera()->position.y, -(world->GetCamera()->position.z + world->GetCamera()->growth));
+			glTranslatef(-world->GetCamera()->GetPosition().x, -world->GetCamera()->GetPosition().y, -(world->GetCamera()->GetPosition().z + world->GetCamera()->GetGrowth()));
 			break;
 		case endRenderWorld:
 			glPopMatrix();

@@ -10,8 +10,9 @@ class UI : public RenderItem
 	Vector3D aimColor;
 	int aimWidth;
 	Button* button;
+	Button* endGameButton;
 public:
-	UI(Camera* pCamera, Vector3D color, int lineWidth, Button* timerText)
+	UI(Camera* pCamera, Vector3D color, int lineWidth, Button* timerText, Button* endGame)
 	{
 		camera = pCamera;
 		aimColor = color;
@@ -19,6 +20,9 @@ public:
 		button = timerText;
 		button->MoveButton({ -button->symbolWidth[(unsigned char)"0"] * 0.07f, 0.9});
 		button->ResizeButton(0.2f);
+		endGameButton = endGame;
+		endGameButton->ResizeButton(0.2f);
+		endGameButton->MoveButton({ -button->symbolWidth[(unsigned char)"0"] * 0.07f * 8, 0.5 });
 	}
 	void Render() override
 	{
@@ -45,8 +49,8 @@ public:
 		glVertex3f(0.4,-0.9,0.0);
 		glColor3f(0, 1, 0);
 		glVertex3f(0.4, -0.8, 0.0);
-		glVertex3f(0.4 + 0.4 * camera->currentHP / 100, -0.8, 0.0);
-		glVertex3f(0.4 + 0.4 * camera->currentHP / 100, -0.9, 0.0);
+		glVertex3f(0.4 + 0.4 * camera->GetCurrentHP() / 100, -0.8, 0.0);
+		glVertex3f(0.4 + 0.4 * camera->GetCurrentHP() / 100, -0.9, 0.0);
 		glVertex3f(0.4, -0.9, 0.0);
 		glEnd();
 		glBegin(GL_LINE_LOOP);
@@ -60,6 +64,10 @@ public:
 		{
 			button->SetNumber(camera->GetWavesTimer());
 			button->DrawButtonText({ 1,1,1 });
+		}
+		if (camera->dead)
+		{
+			endGameButton->DrawButtonText({1,1,1});
 		}
 		glPopMatrix();
 		glDepthMask(GL_LESS);

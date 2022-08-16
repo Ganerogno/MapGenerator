@@ -18,7 +18,7 @@ Menu::Menu( Button* buttonlist, int num, Decoration* decor, GLFWwindow* win) : M
 	buttons = buttonlist;
 	buttonsNum = num;
 	buttonSize = 0.05;
-	MoveButtons({ -0.8f,0.3f });
+	MoveButtons({ -0.8f,0.5f });
 	decoration = decor;
 }
 void Menu::Colored(Vector3D bColor, Vector3D bColorB, Vector3D lColorB, Vector3D tColorB)
@@ -48,6 +48,8 @@ void Menu::Render()
 	glLineWidth(2);
 	for (int i = 0; i < buttonsNum; i++)
 	{
+		if (!Menu::continueGame && !i)
+			continue;
 		buttons[i].DrawButton(backgroundColorButton, lineColorButton, textColorButton);
 	}
 
@@ -91,14 +93,21 @@ void Menu::Update()
 		if (buttons[i].TestCoordinate(x, y))
 		{
 			choicenButton = &buttons[i];
-			flag = true;
+			if (choicenButton == &buttons[0] && !Menu::continueGame)
+			{
+				flag = false;
+			}
+			else
+			{
+				flag = true;
+			}
 		}
 	}
 	if (!flag)
 	{
 		choicenButton = nullptr;
 	}
-	if (Camera::leftMouseButton)
+	if (Camera::leftMouseButton && Menu::drawMenu)
 	{
 		if (choicenButton && choicenButton->function != nullptr)
 		{

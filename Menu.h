@@ -23,6 +23,7 @@ class Menu : public RenderItem, public UpdateItem
 	GLFWwindow* window;
 public:
 	static bool drawMenu;
+	static bool continueGame;
 
 	Menu(GLFWwindow* win);
 	Menu(Button* buttonlist, int num, Decoration* decor, GLFWwindow* win);
