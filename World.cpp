@@ -1,4 +1,12 @@
 #include "World.h"
+
+GLfloat FindZ(GLfloat x, GLfloat y)
+{
+	GLfloat topX = PerlinNoise::Interpolation(Chunk::coordinates[(int)x][(int)y + 1], Chunk::coordinates[(int)x + 1][(int)y + 1], x - (int)x);
+	GLfloat bottomX = PerlinNoise::Interpolation(Chunk::coordinates[(int)x][(int)y], Chunk::coordinates[(int)x + 1][(int)y], x - (int)x);
+	return PerlinNoise::Interpolation(topX, bottomX, y - (int)y);
+}
+
 Chunk::Chunk()
 {
 	int count;
@@ -37,7 +45,7 @@ Chunk::Chunk()
 				color[i][j].y = 0.8;
 				color[i][j].z = 0.1;
 			}
-			if (coordinates[i][j] < Water::hight)
+			if (coordinates[i][j] < Water::hight + 2)
 			{
 				color[i][j].x = 0.8;
 				color[i][j].y = 0.8;
@@ -117,16 +125,9 @@ World::World(Camera* pCamera, Water* pWater, Sun* pSun)
 }
 void World::Render()
 {
-	glClearColor(0.1f, 0.2f, 0.6f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glPushMatrix();
-	glRotatef(-camera->angle.x, 1, 0, 0);
-	glRotatef(camera->angle.z, 0, 0, 1);
-	glTranslatef(-camera->position.x, -camera->position.y, -(camera->position.z + camera->growth));
 	floor.DrawChunk();
 	water->Render();
 	sun->Render();
-	glPopMatrix();
 }
 void World::StopRender()
 {
@@ -139,4 +140,8 @@ void World::ContinueRender()
 	canRender = true;
 	water->ContinueRender();
 	sun->ContinueRender();
+}
+Camera* World::GetCamera()
+{
+	return camera;
 }

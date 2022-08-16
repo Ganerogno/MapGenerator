@@ -53,4 +53,5 @@ GLfloat Dot(Vector3D first, Vector3D second);
 Vector3D CreateNormal(Vector3D first, Vector3D second);
 GLfloat FindAngle(Vector3D first, Vector3D second);
 Vector3D CreateVector3D(Vector3D startP, Vector3D endP);
-Vector3D Cross(Vector3D first, Vector3D second);
+GLfloat Cross(Vector3D first, Vector3D second);
+GLfloat toDegrees(GLfloat angle);

@@ -1,27 +1,33 @@
 #pragma once
 #include <deque>
-#include<glad/glad.h>
 #include <algorithm>
+#include <queue>
+#include "Container.h"
 
 class RenderItem
 {
 protected:
-	bool mustDeleted;
+	bool mustDeletedR;
 	bool canRender;
 public:
 	RenderItem();
-	bool GetCanRender();
-	bool GetMustDeleted();
+	virtual bool GetCanRender();
+	virtual bool GetMustDeletedR();
 	virtual void StopRender();
 	virtual void ContinueRender();
-	void MustDeleted();
+	void MustDeletedR();
 	virtual void Render() = 0;
 };
 class Render
 {
+	std::queue<Container<RenderItem>> buffer;
 	std::deque<RenderItem*> items;
+	RenderItem* points[2];
 public:
-	void Add(RenderItem* item);
+	void Add(RenderItem* item, Position pos = end);
+	void AddPoint(RenderItem* item, Position pos);
+	void SaveChanges();
 	void Draw();
 	void Delete();
+	int GetSize();
 };

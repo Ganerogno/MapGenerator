@@ -1,6 +1,6 @@
 #include "Sun.h"
 
-Sun::Sun(GLfloat sunSize, int sunDistance, int wSize, GLfloat sunAngle, GLfloat sunSpeed, Shader* sunShader, Vector3D sunColor = { 1,1,1 }, Vector3D rotationSides = { 1,0,0 })
+Sun::Sun(GLfloat sunSize, int sunDistance, int wSize, GLfloat sunAngle, GLfloat sunSpeed, Shader* sunShader, Vector3D sunColor, Vector3D rotationSides)
 {
 	size = sunSize;
 	distance = sunDistance;
@@ -15,12 +15,13 @@ Sun::Sun(GLfloat sunSize, int sunDistance, int wSize, GLfloat sunAngle, GLfloat 
 	FindPosition();
 	shader = sunShader;
 	color = sunColor;
-	vertex = new GLfloat[24]
+;
+	GLfloat* vertex = new GLfloat[24]
 	{
 		size, size, size,   size, -size, size,   -size, -size, size,   -size, size, size,
 		size, size, -size,   size, -size, -size,   -size, -size, -size,   -size, size, -size
 	};
-	vertexIndex = new GLuint[24]
+	GLuint* vertexIndex = new GLuint[24]
 	{
 		0,1,2,3,  4,5,6,7,  1,2,6,5,  0,3,7,4,  0,1,5,4,  2,3,7,6
 	};

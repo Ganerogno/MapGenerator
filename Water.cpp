@@ -50,7 +50,7 @@ void Water::Update()
 	{
 		for (int j = 0; j < size; j++)
 		{
-			surface[i][j] = PerlinNoise::Noise(i + time, j, size);
+			surface[i][j] = PerlinNoise::Noise(i + time, j, size) * 5;
 		}
 	}
 	time++;

@@ -6,7 +6,9 @@ GLfloat CreateModul(Vector3D vector)
 }
 void Normalize(Vector3D& vector)
 {
-	vector /= CreateModul(vector);
+	GLfloat modul = CreateModul(vector);
+	if(modul)
+		vector /= CreateModul(vector);
 }
 void turnZ(Vector3D& vector, GLfloat ang)
 {
@@ -32,23 +34,23 @@ GLfloat Dot(Vector3D first, Vector3D second)
 }
 Vector3D CreateNormal(Vector3D first, Vector3D second)
 {
-	Vector3D normal;
-
-	normal.x = first.y * second.z - first.z * second.y;
-	normal.y = first.z * second.x - first.x * second.z;
-	normal.z = first.x * second.y - first.y * second.x;
-	return normal;
+	return { first.y * second.z - first.z * second.y, first.z * second.x - first.x * second.z, first.x * second.y - first.y * second.x };
 }
 GLfloat FindAngle(Vector3D first, Vector3D second)
 {
 	GLfloat cos = Dot(first, second) / (CreateModul(first) * CreateModul(second));
-	GLfloat sin = CreateModul(CreateNormal(first, second)) / (CreateModul(first) * CreateModul(second));
+	GLfloat sin = Cross(first, second) / (CreateModul(first) * CreateModul(second));
 	return atan2f(sin, cos);
-}Vector3D CreateVector3D(Vector3D startP, Vector3D endP)
+}
+Vector3D CreateVector3D(Vector3D startP, Vector3D endP)
 {
 	return { endP.x - startP.x, endP.y - startP.y, endP.z - startP.z };
 }
-Vector3D Cross(Vector3D first, Vector3D second)
+GLfloat Cross(Vector3D first, Vector3D second)
 {
-	return { first.y * second.z - first.z * second.y, first.z * second.x - first.x * second.z, first.x * second.y - first.y * second.x};
+	return first.y * second.z - first.z * second.y + first.z * second.x - first.x * second.z + first.x * second.y - first.y * second.x;
+}
+GLfloat toDegrees(GLfloat angle)
+{
+	return angle / M_PI * 180;
 }

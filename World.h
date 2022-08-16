@@ -1,18 +1,21 @@
 #pragma once
 #include <vector>
+#include "Camera.h"
 #include "Render.h"
+#include "Update.h"
 #include "Math3D.h"
 #include "PerlinNoise.h"
 #include "Water.h"
-#include "Camera.h"
 #include "Sun.h"
+
+GLfloat FindZ(GLfloat x, GLfloat y);
 
 class Chunk
 {
 public:
 	static const int size;
 	static int octaves;
-	GLfloat** coordinates;
+	static GLfloat** coordinates;
 	Vector3D** color;
 	GLuint vertexVBO;
 	GLuint colorVBO;
@@ -35,4 +38,5 @@ public:
 	void Render() override;
 	void StopRender() override;
 	void ContinueRender() override;
+	Camera* GetCamera();
 };

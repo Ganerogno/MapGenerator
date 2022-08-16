@@ -4,7 +4,7 @@
 RenderItem::RenderItem()
 {
 	canRender = true;
-	mustDeleted = false;
+	mustDeletedR = false;
 }
 
 bool RenderItem::GetCanRender()
@@ -12,9 +12,9 @@ bool RenderItem::GetCanRender()
 	return canRender;
 }
 
-bool RenderItem::GetMustDeleted()
+bool RenderItem::GetMustDeletedR()
 {
-	return mustDeleted;
+	return mustDeletedR;
 }
 
 void RenderItem::StopRender()
@@ -27,18 +27,44 @@ void RenderItem::ContinueRender()
 	canRender = true;
 }
 
-void RenderItem::MustDeleted()
+void RenderItem::MustDeletedR()
 {
 	StopRender();
-	mustDeleted = true;
+	mustDeletedR = true;
 }
-void Render::Add(RenderItem* item)
+void Render::Add(RenderItem* item, Position pos)
 {
-	items.push_back(item);
+	buffer.push(Container<RenderItem>(item, pos));
 }
-
+void Render::AddPoint(RenderItem* item, Position pos)
+{
+	points[pos - 1] = item;
+}
+void Render::SaveChanges()
+{
+	while (buffer.size() > 0)
+	{
+		if (!buffer.front().GetPosition()) //end
+		{
+			items.push_back(buffer.front().GetItem());
+		}
+		else
+		{
+			for (auto it = items.begin(); it != items.end(); ++it)
+			{
+				if ((*it) == points[buffer.front().GetPosition() - 1])
+				{
+					items.insert(it + 1, buffer.front().GetItem());
+					break;
+				}
+			}
+		}
+		buffer.pop();
+	}
+}
 void Render::Draw()
 {
+	SaveChanges();
 	for (std::deque<RenderItem*>::iterator item = items.begin(); item != items.end(); ++item)
 	{
 		if ((*item)->GetCanRender())
@@ -46,6 +72,7 @@ void Render::Draw()
 			(*item)->Render();
 		}
 	}
+	Delete();
 }
 void Render::Delete()
 {
@@ -53,4 +80,8 @@ void Render::Delete()
 		{
 			return (*item).GetCanRender();
 		}), items.end());
+}
+int Render::GetSize()
+{
+	return items.size();
 }

@@ -1,30 +1,33 @@
 #pragma once
-#include <iostream>
 #include <algorithm>
 #include <deque>
+#include <queue>
 #include <chrono>
+#include "Container.h"
 
 class UpdateItem
 {
 protected:
-	bool mustDeleted;
+	bool mustDeletedU;
 	bool canUpdate;
 public:
 	UpdateItem();
 	bool GetCanUpdate();
-	bool GetMustDeleted();
+	bool GetMustDeletedU();
 	virtual void StopUpdate();
 	virtual void ContinueUpdate();
-	void MustDeleted();
+	void MustDeletedU();
 	virtual void Update() = 0;
 };
 class Updater
 {
+	std::queue<UpdateItem*> buffer;
 	std::deque<UpdateItem*> items;
 public:
 	std::chrono::steady_clock::time_point startTime;
-	std::chrono::steady_clock::duration static deltaTime;
+	static std::chrono::steady_clock::duration deltaTime;
 	void Add(UpdateItem* item);
 	void Update();
 	void Delete();
+	int GetSize();
 };

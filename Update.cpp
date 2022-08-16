@@ -2,7 +2,7 @@
 
 UpdateItem::UpdateItem()
 {
-	mustDeleted = false;
+	mustDeletedU = false;
 	canUpdate = true;
 }
 
@@ -11,9 +11,9 @@ bool UpdateItem::GetCanUpdate()
 	return canUpdate;
 }
 
-bool UpdateItem::GetMustDeleted()
+bool UpdateItem::GetMustDeletedU()
 {
-	return mustDeleted;
+	return mustDeletedU;
 }
 
 void UpdateItem::StopUpdate()
@@ -24,19 +24,23 @@ void UpdateItem::ContinueUpdate()
 {
 	canUpdate = true;
 }
-void UpdateItem::MustDeleted()
+void UpdateItem::MustDeletedU()
 {
 	StopUpdate();
-	mustDeleted = true;
+	mustDeletedU = true;
 }
 
 void Updater::Add(UpdateItem* item)
 {
-	items.push_back(item);
+	buffer.push(item);
 }
-
 void Updater::Update()
 {
+	while (buffer.size() > 0)
+	{
+		items.push_back(buffer.front());
+		buffer.pop();
+	}
 	for (std::deque<UpdateItem*>::iterator item = items.begin(); item != items.end(); ++item)
 	{
 		if ((*item)->GetCanUpdate())
@@ -44,11 +48,16 @@ void Updater::Update()
 			(*item)->Update();
 		}
 	}
+	Delete();
 }
 void Updater::Delete()
 {
 	items.erase( std::remove_if(items.begin(), items.end(), [](UpdateItem*& item)
 		{
-			return (*item).GetCanUpdate();
+			return (*item).GetMustDeletedU();
 		}), items.end());
+}
+int Updater::GetSize()
+{
+	return items.size();
 }

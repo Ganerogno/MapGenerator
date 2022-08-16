@@ -17,9 +17,7 @@ class Sun : public UpdateItem, public RenderItem
 	int distance;
 	Vector3D rotateSide;
 	Vector3D color;
-	GLfloat* vertex;
 	GLuint VBO;
-	GLuint* vertexIndex;
 	GLuint EBO;
 	Shader* shader;
 public:
