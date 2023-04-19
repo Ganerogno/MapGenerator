@@ -14,7 +14,7 @@ Also we need:
 - glad https://github.com/Dav1dde/glad
 - stb_image https://github.com/nothings/stb
 
-Link libraries and write in "Additional Dependencies": opengl32.lib, glfw3.lib.
+This project can be compiled in Visual Studio 2022. Link libraries and write in "Additional Dependencies": opengl32.lib, glfw3.lib.
 
 ## Screenshots
 
